@@ -1,0 +1,84 @@
+{% load i18n %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href={% static 'chess/favicon.ico' %} type="image/x-icon"/>
+    <link rel="shortcut icon" href={% static 'chess/favicon.ico' %} type="image/x-icon"/>
+    <link rel="bookmark" href={% static 'chess/favicon.ico' %} type="image/x-icon"/>
+
+    <title>{% block title_content %}{% endblock %}</title>
+    {% block base_css %}
+        <link href="{% static 'chess/css/chess.css' %}" rel="stylesheet" type="text/css">
+        {#        <link href="{% static 'chess/css/my.css' %}" rel="stylesheet" type="text/css">#}
+        {% block css %}{% endblock %}
+    {% endblock %}
+    <style type="text/css">
+        p {
+            width: 350px;
+        }
+
+        a {
+            color: #f00;
+            text-decoration: none;
+            margin: 10px;
+
+            text-align: center;
+        }
+
+        a:hover {
+            color: #FDF405;
+        }
+
+        a:active {
+            color: #F707EE;
+        }
+
+    </style>
+</head>
+<body>
+<div style="flex: 1; align-content:center;margin-bottom: 10px">
+    <form id="form1" action="{% url 'set_language' %}" method="post"
+          style="margin-block-end: 0;">{% csrf_token %}
+        <input name="next" type="hidden" value="{{ redirect_to }}">
+        <label class="select_label">
+            <select id="sel1" name="language" style="font-size:1rem;background: bisque;opacity:50%">
+                {% get_current_language as LANGUAGE_CODE %}
+                {% get_available_languages as LANGUAGES %}
+                {% get_language_info_list for LANGUAGES as languages %}
+                {% for language in languages %}
+                    <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %}
+                            selected{% endif %}>
+                        {{ language.name_local }} ({{ language.code }})
+                    </option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <input id="input1" type="submit"
+               value={% translate "切换" %} style="margin-block-end:0;height:22px;display:none">
+    </form>
+</div>
+
+{% block body_content %}{% endblock %}
+
+{% block base_js %}
+    <script src="{% static 'chess/jquery/jquery.min.js' %}"></script>
+    {% block js %}{% endblock %}
+{% endblock %}
+<div style="margin: auto;width: max-content;">
+    <div style="display: flex;">
+        <a href={% translate "https://zhuanlan.zhihu.com/p/98399454" %} target=“_blank”>{% translate "游戏规则" %}</a>
+        <a href={% url 'chess:feedback' %}>{% translate "提供反馈" %}</a>
+        <a href={% url 'chess:about' %}>{% translate "关于我们" %}</a>
+    </div>
+</div>
+<script>
+    $("#sel1").on("change", function () {
+        $("#form1").submit()
+        {#$("#input1").click()#}
+    });
+</script>
+</body>
+</html>
